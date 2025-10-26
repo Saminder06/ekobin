@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refurbished Items - Ekobin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+         .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #09f; /* Blue color for spinner */
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Item card styling */
+        .item-card {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 0.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .item-card h4 {
+             margin-bottom: 0.5rem;
+        }
+         .item-card p.description { /* Target description specifically */
+             flex-grow: 1;
+             margin-bottom: 0.75rem;
+             color: #4b5563; /* text-gray-600 */
+             font-size: 0.875rem; /* text-sm */
+         }
+         .item-card .price-points-container {
+             margin-top: auto; /* Push price/buy button container to bottom */
+             padding-top: 0.75rem; /* Space above */
+             border-top: 1px solid #e5e7eb; /* Separator */
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+         }
+         .item-card .price-points {
+            font-size: 0.875rem;
+         }
+        .original-price {
+            text-decoration: line-through;
+            color: #9ca3af;
+            margin-right: 0.5rem;
+         }
+        .discounted-price {
+            font-weight: 600;
+            color: #16a34a;
+        }
+        .normal-price {
+             font-weight: 500;
+             color: #1f2937;
+        }
+        .points-value {
+             color: #059669;
+             font-weight: 500;
+        }
+        /* Modal styling (copied from index.html) */
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <header class="bg-white shadow-md w-full z-20 top-0">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-green-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-2 -mt-1" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><path d="M12 14a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M12 11v2"></path><path d="m10 13 4-4"></path></svg>
+                Ekobin
+            </a>
+            <div>
+                 <button id="add-item-btn" class="hidden bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors mr-4">
+                    + Add Refurbished Item
+                 </button>
+                <a href="index.html" class="text-sm text-blue-600 hover:underline">← Back to Main Site</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="mt-24">
+        <section id="refurbished-items" class="py-16">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">Giving E-Waste a New Life</h2>
+                    <p class="text-gray-600 mt-2 max-w-2xl mx-auto">Browse available refurbished components and devices recovered through our recycling process.</p>
+                     <p id="voucher-status-msg" class="mt-4 text-sm text-green-600 font-medium hidden"></p>
+                </div>
+
+                 <div id="loading-items" class="text-center p-10"> <div class="spinner mx-auto mb-4"></div>
+                     <p class="text-gray-600">Loading items...</p>
+                 </div>
+
+                <div id="items-container" class="space-y-12 hidden"> <div data-category="Motherboard Chipset">
+                        <h3 class="text-2xl font-semibold mb-4 border-b pb-2 text-blue-700">Motherboard Chipset</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 item-list">
+                            <p class="text-gray-500 no-items-message hidden">No items listed in this category yet.</p>
+                        </div>
+                    </div>
+                    <div data-category="Motors">
+                        <h3 class="text-2xl font-semibold mb-4 border-b pb-2 text-gray-800">Motors</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 item-list">
+                            <p class="text-gray-500 no-items-message hidden">No items listed in this category yet.</p>
+                        </div>
+                    </div>
+                    <div data-category="Fans">
+                        <h3 class="text-2xl font-semibold mb-4 border-b pb-2 text-teal-600">Fans</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 item-list">
+                             <p class="text-gray-500 no-items-message hidden">No items listed in this category yet.</p>
+                        </div>
+                    </div>
+                     <div data-category="AC Components">
+                        <h3 class="text-2xl font-semibold mb-4 border-b pb-2 text-cyan-600">AC Components</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 item-list">
+                             <p class="text-gray-500 no-items-message hidden">No items listed in this category yet.</p>
+                        </div>
+                    </div>
+                    <div data-category="TV Components">
+                        <h3 class="text-2xl font-semibold mb-4 border-b pb-2 text-indigo-700">TV Components</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 item-list">
+                             <p class="text-gray-500 no-items-message hidden">No items listed in this category yet.</p>
+                        </div>
+                    </div>
+                     <div data-category="Refrigerator Components">
+                        <h3 class="text-2xl font-semibold mb-4 border-b pb-2 text-blue-500">Refrigerator Components</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 item-list">
+                             <p class="text-gray-500 no-items-message hidden">No items listed in this category yet.</p>
+                        </div>
+                    </div>
+                     <div data-category="Other">
+                        <h3 class="text-2xl font-semibold mb-4 border-b pb-2 text-gray-500">Other</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 item-list">
+                             <p class="text-gray-500 no-items-message hidden">No items listed in this category yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="add-item-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40 p-4">
+         <div class="bg-white w-full max-w-lg rounded-lg shadow-2xl p-8 relative max-h-[90vh] overflow-y-auto">
+             <button id="close-add-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl" aria-label="Close modal">&times;</button>
+             <h2 class="text-2xl font-bold mb-6 text-center">Add New Refurbished Item</h2>
+             <form id="add-item-form" class="space-y-4">
+                 <div>
+                    <label for="item-name" class="block text-sm font-medium text-gray-700">Item Name</label>
+                    <input type="text" id="item-name" name="item-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                 </div>
+                 <div>
+                    <label for="item-category" class="block text-sm font-medium text-gray-700">Category</label>
+                    <select id="item-category" name="item-category" required class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <option value="Motherboard Chipset">Motherboard Chipset</option>
+                        <option value="Motors">Motors</option>
+                        <option value="Fans">Fans</option>
+                        <option value="AC Components">AC Components</option>
+                        <option value="TV Components">TV Components</option>
+                        <option value="Refrigerator Components">Refrigerator Components</option>
+                        <option value="Other">Other</option>
+                    </select>
+                 </div>
+                 <div>
+                    <label for="item-spec" class="block text-sm font-medium text-gray-700">Specification / Description</label>
+                    <textarea id="item-spec" name="item-spec" rows="3" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"></textarea>
+                 </div>
+                 <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="item-price" class="block text-sm font-medium text-gray-700">Price (₹)</label>
+                        <input type="number" id="item-price" name="item-price" min="0" step="0.01" placeholder="e.g., 500.00" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                     <div>
+                        <label for="item-points" class="block text-sm font-medium text-gray-700">Points Value</label>
+                        <input type="number" id="item-points" name="item-points" min="0" placeholder="e.g., 100" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                 </div>
+                 <p class="text-xs text-gray-500">Enter either Price or Points Value, or both.</p>
+                 <button type="submit" id="save-item-btn" class="mt-6 w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 flex items-center justify-center">Save Item</button>
+             </form>
+         </div>
+    </div>
+
+
+    <footer class="bg-gray-800 text-white py-10 mt-16">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 Ekobin. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+     <div id="message-box" class="modal hidden fixed bottom-5 right-5 bg-gray-800 text-white py-3 px-5 rounded-lg shadow-xl z-50" role="alert">
+         <p id="message-text"></p>
+     </div>
+
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp, enableNetwork, orderBy, doc, getDoc, setDoc, deleteDoc /* Added setDoc, deleteDoc */ } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Configuration ---
+        const firebaseConfig = {
+             apiKey: "AIzaSyBPNQHn7YAmTseXfORzQRWarDVI243b5TY",
+             authDomain: "ewaste-solution-3c406.firebaseapp.com",
+             projectId: "ewaste-solution-3c406",
+             storageBucket: "ewaste-solution-3c406.appspot.com",
+             messagingSenderId: "336892357329",
+             appId: "1:336892357329:web:0fd4fd574c81f28ddbf3f0",
+             measurementId: "G-NN0CB2ZMDT"
+        };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-e-waste-app';
+        const ADMIN_EMAIL = "saminderreddy8055@gmail.com";
+        const DISCOUNT_VOUCHER_ID = "ekobin50off";
+
+        // --- Firebase Initialization ---
+        let app, auth, db;
+        let userId = null;
+        let isAdmin = false;
+        let userHasDiscountVoucher = false;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            await enableNetwork(db);
+            console.log("Refurbished Page: Firebase Initialized");
+        } catch (e) {
+            console.error("Refurbished Page: Firebase init failed", e);
+            loadingItems.innerHTML = `<p class="text-red-600 font-semibold">Error connecting to service.</p>`;
+            loadingItems.classList.remove('hidden'); // Show error if init fails
+        }
+
+        // --- UI Elements ---
+        const addItemBtn = document.getElementById('add-item-btn');
+        const loadingItems = document.getElementById('loading-items');
+        const itemsContainer = document.getElementById('items-container');
+        const addItemModal = document.getElementById('add-item-modal');
+        const closeAddModalBtn = document.getElementById('close-add-modal-btn');
+        const addItemForm = document.getElementById('add-item-form');
+        const saveItemBtn = document.getElementById('save-item-btn');
+        const voucherStatusMsg = document.getElementById('voucher-status-msg');
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+
+        // --- Custom Message Box ---
+        function showMessage(message, isError = false) {
+             if (!messageBox || !messageText) return;
+             // Clear any existing timeouts to prevent message overlap
+             if (messageBox.timeoutId) clearTimeout(messageBox.timeoutId);
+
+             messageBox.classList.remove('bg-red-600', 'bg-green-600', 'hidden', 'opacity-0');
+             messageBox.classList.add(isError ? 'bg-red-600' : 'bg-green-600', 'opacity-100');
+             messageText.textContent = message;
+
+             messageBox.timeoutId = setTimeout(() => { // Store timeout ID
+                 messageBox.classList.remove('opacity-100');
+                 messageBox.classList.add('opacity-0');
+                 setTimeout(() => {
+                    messageBox.classList.add('hidden');
+                    messageBox.timeoutId = null; // Clear timeout ID
+                 }, 300);
+             }, 3000);
+        }
+
+         // --- Check if User has the Discount Voucher ---
+        async function checkUserVoucherStatus(currentUserId) {
+            if (!currentUserId || !db) return false;
+            try {
+                const voucherQuery = query(
+                    collection(db, `/artifacts/${appId}/users/${currentUserId}/claimedVouchers`),
+                    where("voucherId", "==", DISCOUNT_VOUCHER_ID)
+                );
+                const querySnapshot = await getDocs(voucherQuery);
+                return !querySnapshot.empty;
+            } catch (error) {
+                console.error("Error checking voucher status:", error);
+                return false;
+            }
+        }
+
+        // --- Update User Points (Copied from index.html, adapted) ---
+        async function updateUserPoints(userIdParam, pointsToAdd) {
+             if (!userIdParam || !db) return undefined;
+            const userRef = doc(db, `/artifacts/${appId}/users/${userIdParam}/profile`, 'data');
+            try {
+                const userDoc = await getDoc(userRef);
+                const currentPointsVal = userDoc.exists() ? (userDoc.data()?.points || 0) : 0;
+                // Important: Check if enough points BEFORE calculating new points
+                if (pointsToAdd < 0 && currentPointsVal < Math.abs(pointsToAdd)) {
+                    console.log(`User ${userIdParam} has insufficient points. Needed: ${Math.abs(pointsToAdd)}, Has: ${currentPointsVal}`);
+                    return 'insufficient_points'; // Return specific status
+                }
+                const newPoints = Math.max(0, currentPointsVal + pointsToAdd);
+                await setDoc(userRef, { points: newPoints }, { merge: true });
+                console.log(`Points updated for ${userIdParam} to ${newPoints}`);
+                return newPoints; // Return the new points total
+            } catch (error) {
+                console.error("Error updating points for user:", userIdParam, error);
+                showMessage("Could not update your points: " + error.message, true);
+                return undefined; // Indicate error
+            }
+        }
+
+
+        // --- Auth Listener & Admin/Voucher Check ---
+        onAuthStateChanged(auth, async user => {
+             userId = user ? user.uid : null;
+             isAdmin = user && user.email === ADMIN_EMAIL;
+
+             if (isAdmin) {
+                 addItemBtn?.classList.remove('hidden');
+             } else {
+                 addItemBtn?.classList.add('hidden');
+             }
+
+             userHasDiscountVoucher = await checkUserVoucherStatus(userId);
+             if (userHasDiscountVoucher) {
+                 voucherStatusMsg.textContent = "Your 50% Ekobin discount voucher is active!";
+                 voucherStatusMsg.classList.remove('hidden');
+             } else {
+                 voucherStatusMsg.classList.add('hidden');
+             }
+
+             loadRefurbishedItems(); // Load items regardless of login status, price adjusts based on voucher flag
+        });
+
+        // --- Function to Load Items ---
+        async function loadRefurbishedItems() {
+            if (!db || !itemsContainer || !loadingItems) return;
+
+            loadingItems.classList.remove('hidden');
+            itemsContainer.classList.add('hidden');
+
+             document.querySelectorAll('.item-list').forEach(list => {
+                const noItemsMsg = list.querySelector('.no-items-message');
+                list.innerHTML = '';
+                if (noItemsMsg) {
+                    noItemsMsg.classList.add('hidden'); // Hide initially
+                    list.appendChild(noItemsMsg);
+                } else {
+                     // Add it if it doesn't exist (e.g., first load)
+                     const p = document.createElement('p');
+                     p.className = 'text-gray-500 no-items-message hidden';
+                     p.textContent = 'No items listed in this category yet.';
+                     list.appendChild(p);
+                }
+             });
+
+            try {
+                const itemsRef = collection(db, `/artifacts/${appId}/public/data/refurbishedItems`);
+                const q = query(itemsRef, orderBy('postedAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    console.log("No refurbished items found in Firestore.");
+                     document.querySelectorAll('.no-items-message').forEach(msg => msg.classList.remove('hidden')); // Show all "no items"
+                } else {
+                    querySnapshot.forEach((docSnap) => { // Use docSnap instead of doc
+                        const item = { id: docSnap.id, ...docSnap.data() };
+                        const categoryDiv = itemsContainer.querySelector(`[data-category="${item.category}"]`);
+                        const itemListDiv = categoryDiv?.querySelector('.item-list');
+
+                        if (itemListDiv) {
+                             itemListDiv.querySelector('.no-items-message')?.classList.add('hidden');
+                            const card = document.createElement('div');
+                            card.className = 'item-card';
+                            card.dataset.id = item.id;
+
+                            let priceDisplayHTML = '';
+                            const originalPrice = item.price ? Number(item.price) : null;
+                            const pointsValue = item.points ? parseInt(item.points, 10) : null;
+
+                            if (originalPrice !== null) {
+                                if (userHasDiscountVoucher) {
+                                    const discountedPrice = originalPrice * 0.5;
+                                    priceDisplayHTML = `
+                                        <span class="original-price">₹${originalPrice.toFixed(2)}</span>
+                                        <span class="discounted-price">₹${discountedPrice.toFixed(2)}</span>
+                                    `;
+                                } else {
+                                    priceDisplayHTML = `<span class="normal-price">₹${originalPrice.toFixed(2)}</span>`;
+                                }
+                            }
+
+                            let combinedInfo = '';
+                            if (priceDisplayHTML && pointsValue !== null) {
+                                combinedInfo = `${priceDisplayHTML} / <span class="points-value">${pointsValue} Pts</span>`;
+                            } else if (priceDisplayHTML) {
+                                combinedInfo = priceDisplayHTML;
+                            } else if (pointsValue !== null) {
+                                combinedInfo = `<span class="points-value">${pointsValue} Pts</span>`;
+                            }
+
+                            // --- Determine Button Text and Type ---
+                            let buttonHtml = '';
+                            if (pointsValue !== null) {
+                                buttonHtml = `<button data-itemid="${item.id}" data-points="${pointsValue}" class="buy-redeem-btn mt-2 text-sm bg-emerald-600 text-white font-semibold py-1 px-3 rounded hover:bg-emerald-700 transition-colors">Redeem</button>`;
+                            } else if (originalPrice !== null) {
+                                // For price, we just show a placeholder button
+                                buttonHtml = `<button data-itemid="${item.id}" data-price="${userHasDiscountVoucher ? (originalPrice * 0.5) : originalPrice}" class="buy-redeem-btn mt-2 text-sm bg-green-600 text-white font-semibold py-1 px-3 rounded hover:bg-green-700 transition-colors">Buy Now</button>`;
+                            }
+
+                            card.innerHTML = `
+                                <h4 class="font-semibold text-lg">${item.name || 'Unnamed Item'}</h4>
+                                <p class="description">${item.specification || 'No description.'}</p>
+                                <div class="price-points-container">
+                                    <div class="price-points">${combinedInfo || ''}</div>
+                                    ${buttonHtml}
+                                </div>
+                                ${isAdmin ? `<button data-docid="${item.id}" class="delete-item-btn mt-2 text-xs text-red-500 hover:text-red-700 self-end ml-auto">Delete</button>` : ''}
+                            `;
+
+                             card.querySelector('.buy-redeem-btn')?.addEventListener('click', handlePurchaseOrRedeem);
+
+                            if (isAdmin) {
+                                card.querySelector('.delete-item-btn')?.addEventListener('click', handleDeleteItem);
+                            }
+
+                            itemListDiv.appendChild(card);
+                        } else {
+                            console.warn(`Could not find container for category: ${item.category}`);
+                        }
+                    });
+
+                    document.querySelectorAll('.item-list').forEach(list => {
+                        if (list.children.length === 1 && list.firstElementChild.classList.contains('no-items-message')) {
+                             list.firstElementChild.classList.remove('hidden');
+                        }
+                    });
+                }
+
+            } catch (error) {
+                console.error("Error loading refurbished items:", error);
+                 itemsContainer.innerHTML = '<p class="text-red-500 text-center">Error loading items.</p>';
+            } finally {
+                loadingItems.classList.add('hidden');
+                itemsContainer.classList.remove('hidden');
+            }
+        }
+
+        // --- Modal Logic for Add Item ---
+        addItemBtn?.addEventListener('click', () => {
+             if (isAdmin) addItemModal?.classList.remove('hidden');
+        });
+
+        closeAddModalBtn?.addEventListener('click', () => {
+             addItemModal?.classList.add('hidden');
+             addItemForm?.reset();
+        });
+
+         addItemModal?.addEventListener('click', (e) => {
+            if (e.target === addItemModal) {
+                 addItemModal.classList.add('hidden');
+                 addItemForm?.reset();
+            }
+        });
+
+
+        // --- Form Submission Logic ---
+        addItemForm?.addEventListener('submit', async (e) => {
+             e.preventDefault();
+             if (!isAdmin || !db) return;
+
+             const nameInput = addItemForm['item-name'];
+             const categoryInput = addItemForm['item-category'];
+             const specInput = addItemForm['item-spec'];
+             const priceInput = addItemForm['item-price'];
+             const pointsInput = addItemForm['item-points'];
+
+             const name = nameInput?.value.trim();
+             const category = categoryInput?.value;
+             const specification = specInput?.value.trim();
+             const price = priceInput?.value ? parseFloat(parseFloat(priceInput.value).toFixed(2)) : null;
+             const points = pointsInput?.value ? parseInt(pointsInput.value, 10) : null;
+
+             if (!name || !category || !specification) {
+                 showMessage("Please fill in Name, Category, and Specification.", true); return;
+             }
+             if (price === null && points === null) {
+                  showMessage("Please enter either a Price or a Points Value.", true); return;
+             }
+              if ((price !== null && isNaN(price)) || (points !== null && isNaN(points))) {
+                 showMessage("Price and Points Value must be valid numbers.", true); return;
+             }
+             if ((price !== null && price < 0) || (points !== null && points < 0)) {
+                 showMessage("Price and Points cannot be negative.", true); return;
+             }
+
+
+             saveItemBtn.disabled = true;
+             saveItemBtn.innerHTML = '<div class="spinner mx-auto"></div>';
+
+             try {
+                 const itemData = { name, category, specification, price, points, postedAt: serverTimestamp(), purchased: false }; // Added purchased flag
+                 await addDoc(collection(db, `/artifacts/${appId}/public/data/refurbishedItems`), itemData);
+                 showMessage("Item added successfully!", false);
+                 addItemModal?.classList.add('hidden');
+                 addItemForm.reset();
+                 loadRefurbishedItems();
+
+             } catch (error) {
+                 console.error("Error adding item:", error);
+                 showMessage("Failed to add item. Check console for details.", true);
+             } finally {
+                 saveItemBtn.disabled = false;
+                 saveItemBtn.textContent = 'Save Item';
+             }
+        });
+
+         // --- Function to Handle Item Deletion ---
+         async function handleDeleteItem(event) {
+             if (!isAdmin || !db) return;
+             const button = event.target;
+             const docId = button.dataset.docid;
+             if (!docId) return;
+
+             if (confirm("Are you sure you want to delete this item?")) {
+                 button.disabled = true; button.textContent = 'Deleting...';
+                 try {
+                     const itemRef = doc(db, `/artifacts/${appId}/public/data/refurbishedItems`, docId);
+                     await deleteDoc(itemRef);
+                     showMessage("Item deleted successfully.", false);
+                     loadRefurbishedItems();
+                 } catch (error) {
+                     console.error("Error deleting item:", error);
+                     showMessage("Failed to delete item. Check console.", true);
+                     button.disabled = false; button.textContent = 'Delete';
+                 }
+             }
+         }
+
+        // --- Function to Handle Purchase/Redemption Click ---
+        async function handlePurchaseOrRedeem(event) {
+            const button = event.target;
+            const itemId = button.dataset.itemid;
+            const pointsCost = button.dataset.points ? parseInt(button.dataset.points, 10) : null;
+            const price = button.dataset.price ? parseFloat(button.dataset.price) : null;
+
+            if (!itemId) return;
+
+            // Check if user is logged in
+            if (!userId) {
+                showMessage("Please log in to buy or redeem items.", true);
+                // Optional: Redirect to login on index.html?
+                // window.location.href = 'index.html#login';
+                return;
+            }
+
+            button.disabled = true;
+            button.innerHTML = '<div class="spinner mx-auto h-4 w-4 border-2"></div>'; // Small spinner
+
+            // --- Handle Redemption with Points ---
+            if (pointsCost !== null) {
+                const updateResult = await updateUserPoints(userId, -pointsCost);
+
+                if (updateResult === 'insufficient_points') {
+                    showMessage("You don't have enough points to redeem this item.", true);
+                } else if (typeof updateResult === 'number') {
+                    showMessage(`Item redeemed for ${pointsCost} points!`, false);
+                    // TODO Optional: Mark item as purchased in Firestore
+                    // await setDoc(doc(db, `/artifacts/${appId}/public/data/refurbishedItems`, itemId), { purchased: true, purchasedBy: userId }, { merge: true });
+                    // loadRefurbishedItems(); // Reload to reflect change
+                } else {
+                    // updateUserPoints already showed an error message
+                    showMessage("Could not complete redemption.", true);
+                }
+            }
+            // --- Handle Purchase with Price ---
+            else if (price !== null) {
+                // This is where real payment integration would go.
+                // For now, just show a message.
+                console.log(`Attempting to buy item ${itemId} for ₹${price.toFixed(2)}`);
+                showMessage(`Proceeding to checkout for item (₹${price.toFixed(2)})... (Payment integration needed)`, false);
+                // In a real app: redirect to payment page, call payment API, etc.
+            }
+
+            // Re-enable button after a short delay (or after actual process finishes)
+            setTimeout(() => {
+                button.disabled = false;
+                button.textContent = pointsCost !== null ? 'Redeem' : 'Buy Now';
+            }, 1500);
+        }
+
+    </script>
+
+</body>
+</html>
