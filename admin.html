@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1024">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Ekobin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -40,36 +40,6 @@
         .status-Approved { background-color: #FEF3C7; color: #92400E; }
         .status-Rejected { background-color: #FEE2E2; color: #991B1B; }
 
-        /* User table styling */
-        .user-table th, .user-table td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-            vertical-align: middle;
-        }
-        .user-table th {
-             background-color: #f9fafb;
-             font-weight: 600;
-             font-size: 0.75rem;
-             text-transform: uppercase;
-             letter-spacing: 0.05em;
-             color: #4b5563;
-        }
-         .user-table td {
-            font-size: 0.875rem;
-            color: #1f2937;
-         }
-         .user-table .email-col {
-            font-weight: 500;
-         }
-         .user-table .date-col {
-             color: #6b7280;
-         }
-          .user-table .uid-col {
-             color: #9ca3af;
-             font-size: 0.75rem;
-             font-family: monospace;
-         }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -115,10 +85,9 @@
                 <div class="spinner mx-auto mb-4"></div>
                 <p class="text-gray-600">Loading admin data...</p>
             </div>
-            <div id="requests-list" class="hidden grid grid-cols-3 gap-6">
-            </div>
+            <div id="requests-list" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
         </div>
-
     </main>
 
     <div id="message-box" class="modal hidden fixed bottom-5 right-5 bg-gray-800 text-white py-3 px-5 rounded-lg shadow-xl z-50" role="alert">
